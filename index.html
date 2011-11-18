@@ -1,7 +1,104 @@
+<!DOCTYPE html>
 <html>
-<head>
-</head>
-<body>
-My Github Page..  Coming soon.. :)
-</body>
+  <head>
+    <title>Canvas Draw App</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="canvas.js"></script>
+    <script type="text/javascript">
+      function load_app(){
+        dapp = new Draw.App;
+        dapp.init();
+        updateSize(dapp.getStyle("lineWidth"));
+         
+        document.getElementById("clear").onclick = function(){
+          dapp.clear();
+          dapp.redraw();
+        }
+         
+        var color_buttons = document.getElementsByName("color");
+        for(var  i in color_buttons){
+          color_buttons[i].onclick = function(){
+            dapp.setStyle("strokeStyle", this.value);
+          }
+        }
+         
+        document.getElementById("size_minus").onclick = function(){
+          dapp.setStyle("lineWidth", (dapp.getStyle("lineWidth")-1)); 
+          updateSize(dapp.getStyle("lineWidth"));          
+        }
+        document.getElementById("size_plus").onclick = function(){
+          dapp.setStyle("lineWidth", (dapp.getStyle("lineWidth")+1));
+          updateSize(dapp.getStyle("lineWidth"));
+        }
+        document.getElementById("save").onclick = function(){
+          window.open(dapp.saveAsImage());
+        } 
+        document.getElementById("undo").onclick = function(){
+          dapp.undo();
+        } 
+         
+         
+      }
+      function updateSize(size){
+        document.getElementById("size").innerHTML = size;
+      }
+      
+    </script>
+
+    <style type="text/css" media="screen">
+      body{
+        margin:0;
+        padding:0;
+        overflow: hidden;
+      }
+      #canvas{
+        
+        -webkit-transition: all 300ms ease-in;
+        -moz-transition: all 300ms ease-in;
+        transition: all 300ms ease-in;
+      }
+
+      .button{
+        border:1px solid #444;
+        -moz-border-radius:5px;
+        -webkit-border-radius:5px;
+        border-radius:5px;
+        color: #fff;
+      }
+      .purple{
+        background-color: #cb3594;
+      }
+      .green{
+        background-color: #659b41;
+      }
+      .yellow{
+        background-color: #ffcf33;
+      }
+      .brown{
+        background-color: #986928;
+      }
+      
+      .panel{
+        position: absolute;
+        z-index: 99;
+        bottom:2em;
+        left: 2em;        
+      }
+    </style>
+  </head>
+  <body onload="load_app()">
+    <div id="canvas_wrapper"> </div>
+    <div class ="panel">
+    <button name="undo" id="undo" value="value">Undo</button>
+    <button name="clear" id="clear" value="value">Clear</button>
+    <button class="button purple"  name="color" value="#cb3594">Purple</button>
+    <button class="button green"  name="color" value="#659b41">Green</button>
+    <button class="button yellow"  name="color" value="#ffcf33">Yellow</button>
+    <button class="button brown"  name="color" value="#986928">Brown</button>
+    <button id="size_minus">-</button><span id ="size"></span>
+    <button id="size_plus">+</button>
+    <button name="save" id="save" >Save</button>
+    </div>
+
+  </body>
 </html>
