@@ -17,7 +17,6 @@
         }
          
         document.getElementById("color").onchange = function(){
-          console.log(this.value);
           dapp.setStyle("strokeStyle", this.value);
         }
          
@@ -36,6 +35,14 @@
           dapp.undo();
         } 
          
+         var mode_btns = document.getElementById("mode").children;
+         for (var i in mode_btns){
+           
+           mode_btns[i].onclick = function(){
+             var value = this.value;
+             dapp.changeMode(value);
+           }
+         }
          
       }
       function updateSize(size){
@@ -83,17 +90,29 @@
         bottom:2em;
         left: 2em;        
       }
+      .hide{
+        display: none;
+      }
     </style>
   </head>
   <body onload="load_app()">
     <div id="canvas_wrapper" title="Show your drawing skills"> </div>
     <div class ="panel">
-      <button name="undo" id="undo" value="value">Undo</button>
+      <button name="undo" id="undo" value="value" class="hide">Undo</button>
       <button name="clear" id="clear" value="value">Clear</button>
       <input id ="color" class="color" value="df4b26"/>
-      <button id="size_minus">-</button><span id ="size"></span>
-      <button id="size_plus">+</button>
+      <button id="size_minus" class="hide">-</button>
+      <span id ="size" class="hide"></span>
+      <button id="size_plus" class="hide">+</button>
       <button name="save" id="save" >Save</button>
+      
+      <div id="mode">
+        <button id="freedraw" value="freedraw">Freedraw</button>
+        <button id="rectangle" value="rectangle">Rectangle</button>
+        <button id="circle" value="circle">Circle</button>
+        <button id="arrowline" value="arrowline">ArrowLine</button>
+        <button id="line" value="line">Line</button>
+      </div>
     </div>
 
   </body>
