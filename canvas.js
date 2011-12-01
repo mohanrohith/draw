@@ -11,8 +11,9 @@ var Draw = Draw || {
   },
   mode:"freedraw",
   state:{
-    paint:false,    
-    draw:{
+    paint:false, 
+    temp:0,
+    draw:{      
       clickX: [],
       clickY: [],
       clickDrag: [],
@@ -35,7 +36,7 @@ var Draw = Draw || {
       temp:{},
       circles:[]
     },
-    undo:[0]
+    undo:[]
   }, 
   canvas:{},
   App: function(){}
@@ -99,6 +100,7 @@ DAP.bindEvents = function(){
     var p = $this.getPoints(e.clientX, e.clientY);
     Draw.state.paint = true;
     if(Draw.mode == "freedraw"  ){
+      Draw.state.temp = Draw.state.draw.clickX.length;
       $this.addClick(p.x, p.y, false);
     }else if (Draw.mode == "line"){  
       $this.addLineTemp(p.x, p.y, false);
@@ -131,10 +133,19 @@ DAP.bindEvents = function(){
   }
   
   canvas.onmouseup = function(e){
+    
+    var state = {
+      mode : Draw.mode
+    };
+    
     Draw.state.paint = false;
-    //Draw.state.undo.push(Draw.state.draw.clickX.length);
+    
     var p = $this.getPoints(e.clientX, e.clientY);
-    if(Draw.mode == "line"){
+    if(Draw.mode == "freedraw"){
+      state["prev"] = Draw.state.temp;
+      state["now"] = Draw.state.draw.clickX.length;
+    }    
+    else if(Draw.mode == "line"){
       $this.addLine(p.x, p.y);
     }
     else if(Draw.mode == "arrowline"){
@@ -144,6 +155,9 @@ DAP.bindEvents = function(){
     }else if (Draw.mode == "circle"){ 
       $this.addCircle(p.x,p.y, true);
     }
+    
+    
+    Draw.state.undo.push(state);
   }
   
 //  canvas.onmouseout = function(e){
@@ -454,15 +468,39 @@ DAP.saveAsImage = function(){
 }
 
 DAP.undo = function(){
-  var index = Draw.state.undo.length,
-  num = Draw.state.undo[index-1] - Draw.state.undo[index-2];
+  //  var index = Draw.state.undo.length,
+  //  num = Draw.state.undo[index-1] - Draw.state.undo[index-2];
+  //  
+  //  if(Draw.state.draw.clickX.length >0){
+  //    for(var arr in Draw.state.draw){
+  //      Draw.state.draw[arr].splice(Draw.state.undo[index-2],num);
+  //    }
+  //  
+  //    Draw.state.undo.pop();
+  //    this.redraw();
+  //  }
   
-  if(Draw.state.draw.clickX.length >0){
-    for(var arr in Draw.state.draw){
-      Draw.state.draw[arr].splice(Draw.state.undo[index-2],num);
+  if(Draw.state.undo.length > 0){
+    var state = Draw.state.undo.pop();
+    if(state.mode == "freedraw"){
+      var num = state.now - state.prev;
+      for(var arr in Draw.state.draw){
+        Draw.state.draw[arr].splice(state.prev,num);
+      }
+    }
+    else if (state.mode == "line"){
+      Draw.state.line.lines.pop();
+    }
+    else if (state.mode == "arrowline"){
+      Draw.state.lineArrow.lines.pop();
+    }
+    else if (state.mode == "rectangle"){
+      Draw.state.rect.boxes.pop();
+    }
+    else if (state.mode == "circle"){
+      Draw.state.ellipsis.circles.pop();
     }
   
-    Draw.state.undo.pop();
     this.redraw();
   }
 }
