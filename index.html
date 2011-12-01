@@ -41,6 +41,7 @@
            mode_btns[i].onclick = function(){
              var value = this.value;
              dapp.changeMode(value);
+             document.getElementById("mode_label").textContent = this.textContent;
            }
          }
          
@@ -93,6 +94,8 @@
       .hide{
         display: none;
       }
+      
+      #mode_label{ background: #999; color: #fff; padding: 0.4em 2em; position: absolute; top: 0; left:0; z-index: 99;}
     </style>
   </head>
   <body onload="load_app()">
@@ -115,5 +118,6 @@
       </div>
     </div>
 
+    <div id="mode_label">Freedraw</div>
   </body>
 </html>

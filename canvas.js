@@ -7,7 +7,7 @@ var Draw = Draw || {
   property:{
     strokeStyle :"#df4b26",
     lineJoin : "round",
-    lineWidth : 5
+    lineWidth : 2
   },
   mode:"freedraw",
   state:{
@@ -21,9 +21,7 @@ var Draw = Draw || {
     },
     line:{
       temp:{},
-      lines:[],
-      lineColor:[],
-      lineWidth:[]
+      lines:[]
     },
     lineArrow:{
       temp:{},
@@ -178,6 +176,7 @@ DAP.addCircle = function(x, y){
     color: Draw.property.strokeStyle,
     lineWidth: Draw.property.lineWidth
   }
+  Draw.state.ellipsis.temp = {};
   Draw.state.ellipsis.circles.push(box);
 }
 
@@ -202,6 +201,7 @@ DAP.addRect = function(x, y){
     color: Draw.property.strokeStyle,
     lineWidth: Draw.property.lineWidth
   }
+  Draw.state.rect.temp = {};
   Draw.state.rect.boxes.push(box);
 }
 
@@ -236,6 +236,7 @@ DAP.addLine = function(x, y){
     color: Draw.property.strokeStyle,
     lineWidth: Draw.property.lineWidth
   }
+  Draw.state.line.temp = {};
   Draw.state.line.lines.push(line);
 }
 
@@ -248,6 +249,7 @@ DAP.addArrowLine = function(x, y){
     color: Draw.property.strokeStyle,
     lineWidth: Draw.property.lineWidth
   }
+  Draw.state.lineArrow.temp = {};
   Draw.state.lineArrow.lines.push(line);
 }
 
@@ -263,18 +265,14 @@ DAP.clear = function(){
   for(var arr in Draw.state.draw){
     Draw.state.draw[arr] =[];
   }
-  for(var arr in Draw.state.line){
-    Draw.state.line[arr] =[];
-  }
-  for(var arr in Draw.state.lineArrow){
-    Draw.state.lineArrow[arr] =[];
-  }
-  for(var arr in Draw.state.rect){
-    Draw.state.rect[arr] =[];
-  }
-  for(var arr in Draw.state.ellipsis){
-    Draw.state.ellipsis[arr] =[];
-  }
+  
+  Draw.state.line.lines =[];
+  Draw.state.line.temp ={};
+  Draw.state.lineArrow.lines =[];
+  Draw.state.lineArrow.temp ={};
+  Draw.state.rect.boxes =[];
+  Draw.state.rect.temp ={};
+  Draw.state.ellipsis.temp ={};
 }
 
 DAP.setStyle = function(property, value){
@@ -368,23 +366,30 @@ DAP.drawArrowLine = function(){
 
 DAP.drawArrowHead = function(p, color){
   var angle = ((Math.atan2(p.x1 - p.x2, p.y1 - p.y2))*180/Math.PI)-90,
-  barb_length=40,
-  barb_angle_degrees = 20,
+  barb_length=20,
+  barb_angle_degrees = 30,
   x1 = p.x2 + (barb_length * Math.cos(degToRad(-angle - barb_angle_degrees))),
   y1 = p.y2 + (barb_length * Math.sin(degToRad(-angle - barb_angle_degrees))),
   x2 = p.x2 + (barb_length * Math.cos(degToRad(-angle + barb_angle_degrees))),
-  y2 = p.y2 + (barb_length * Math.sin(degToRad(-angle + barb_angle_degrees)));
-	
+  y2 = p.y2 + (barb_length * Math.sin(degToRad(-angle + barb_angle_degrees))),
+  cpx=(p.x2+x1+x2)/3,
+  cpy=(p.y2+y1+y2)/3;
+  
 
   Draw.canvas.context.beginPath();
   Draw.canvas.context.moveTo(x1,y1);
   Draw.canvas.context.lineTo(p.x2,p.y2);
   Draw.canvas.context.lineTo(x2,y2);
-  Draw.canvas.context.fillStyle = color;
-  Draw.canvas.context.lineCap = "round";  
+ 
+  Draw.canvas.context.quadraticCurveTo(cpx,cpy,x1,y1);
+  Draw.canvas.context.lineWidth = 1;
+  Draw.canvas.context.fillStyle = color; 
   Draw.canvas.context.fill();
   Draw.canvas.context.closePath();
+  
+  
 }
+
 
 DAP.drawBox = function(){
   for(var i = 0; i < Draw.state.rect.boxes.length; i++){
