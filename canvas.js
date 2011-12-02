@@ -282,11 +282,15 @@ DAP.clear = function(){
   
   Draw.state.line.lines =[];
   Draw.state.line.temp ={};
+  
   Draw.state.lineArrow.lines =[];
   Draw.state.lineArrow.temp ={};
+  
   Draw.state.rect.boxes =[];
   Draw.state.rect.temp ={};
+  
   Draw.state.ellipsis.temp ={};
+  Draw.state.ellipsis.circles =[];
 }
 
 DAP.setStyle = function(property, value){
